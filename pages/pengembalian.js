@@ -26,7 +26,7 @@ const Pengembalian = ({ peminjaman, pengembalian }) => {
       router.replace(router.asPath);
     } catch (error) {
       console.error("Error saat mengembalikan buku:", error.response?.data || error);
-      alert(error.response?.data?.message || "Gagal melakukan pengembalian");
+      alert("Gagal melakukan pengembalian");
     }
     setLoading(false);
   };
@@ -43,14 +43,13 @@ const Pengembalian = ({ peminjaman, pengembalian }) => {
               onChange={(e) => setSelectedPeminjaman(e.target.value)}
             >
               <option value="">Pilih Peminjaman</option>
-              {peminjaman
-                .filter((p) => !p.sudah_dikembalikan) // Hanya yang belum dikembalikan
-                .map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.nama_siswa} - {p.tanggal_pinjam}
-                  </option>
-                ))}
+              {peminjaman.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.siswa?.nama_siswa || "Tidak Ditemukan"} - {p.tanggal_pinjam}
+                </option>
+              ))}
             </select>
+
           </div>
 
           <button className="btn btn-primary" type="submit" disabled={loading}>
@@ -66,7 +65,6 @@ const Pengembalian = ({ peminjaman, pengembalian }) => {
               <th>Nama Siswa</th>
               <th>Tanggal Pinjam</th>
               <th>Tanggal Kembali</th>
-              <th>Buku yang Dikembalikan</th>
               <th>Denda</th>
             </tr>
           </thead>
@@ -74,25 +72,12 @@ const Pengembalian = ({ peminjaman, pengembalian }) => {
             {pengembalian.map((p) => (
               <tr key={p.id}>
                 <td>{p.id}</td>
-                <td>{p.nama_siswa}</td>
-                <td>{p.tanggal_pinjam}</td>
+                <td>{p.peminjaman?.siswa?.nama_siswa || "Tidak Ditemukan"}</td>
+                <td>{p.peminjaman?.tanggal_pinjam || "Tidak Ada Data"}</td>
                 <td>{p.tanggal_pengembalian}</td>
-                <td>
-                  {p.buku_dikembalikan && p.buku_dikembalikan.length > 0 ? (
-                    <ul className="list-unstyled mb-0">
-                      {p.buku_dikembalikan.map((b) => (
-                        <li key={b.id_buku}>
-                          {b.judul_buku} (Qty: {b.qty})
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <span className="text-muted">Tidak ada data</span>
-                  )}
-                </td>
                 <td>Rp {p.denda || 0}</td>
               </tr>
-            ))} 
+            ))}
           </tbody>
         </table>
       </div>
